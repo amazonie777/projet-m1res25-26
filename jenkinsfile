@@ -18,11 +18,51 @@ pipeline {
                     echo "Contenu du projet :"
                     ls -la
 
-                    test -f index.html || (echo "index.html manquant" && exit 1)
+                    echo "Verification des fichiers obligatoires..."
+
+                    if [ -f index.html ]; then
+                        HTML_FILE="index.html"
+                    elif [ -f Index.html ]; then
+                        HTML_FILE="Index.html"
+                    else
+                        echo "Fichier HTML manquant : index.html ou Index.html"
+                        exit 1
+                    fi
+
                     test -f style.css || (echo "style.css manquant" && exit 1)
                     test -f script.js || (echo "script.js manquant" && exit 1)
 
+                    echo "Fichier HTML trouve : $HTML_FILE"
                     echo "Tous les fichiers sont presents."
+                '''
+            }
+        }
+
+        stage('Test HTML') {
+            steps {
+                sh '''
+                    if [ -f index.html ]; then
+                        HTML_FILE="index.html"
+                    else
+                        HTML_FILE="Index.html"
+                    fi
+
+                    echo "Verification rapide du fichier HTML : $HTML_FILE"
+
+                    grep -i "<html" "$HTML_FILE" || (echo "Balise <html> manquante" && exit 1)
+                    grep -i "style.css" "$HTML_FILE" || (echo "Lien CSS manquant dans le HTML" && exit 1)
+                    grep -i "script.js" "$HTML_FILE" || (echo "Lien JS manquant dans le HTML" && exit 1)
+
+                    echo "HTML correct."
+                '''
+            }
+        }
+
+        stage('Build termine') {
+            steps {
+                sh '''
+                    echo "Pipeline termine avec succes."
+                    echo "Projet pret."
                 '''
             }
         }
