@@ -1,19 +1,30 @@
 pipeline {
     agent any
 
+    options {
+        skipDefaultCheckout(true)
+    }
+
     stages {
-
-        stage('Clean workspace') {
-            steps {
-                sh 'rm -rf projet-aires25-26'
-            }
-        }
-
         stage('Checkout SCM') {
             steps {
-                sh 'git clone https://github.com/srcced/projet-aires25-26.git'
+                checkout scm
             }
         }
 
+        stage('Verifier les fichiers') {
+            steps {
+                sh '''
+                    echo "Contenu du projet :"
+                    ls -la
+
+                    test -f index.html || (echo "index.html manquant" && exit 1)
+                    test -f style.css || (echo "style.css manquant" && exit 1)
+                    test -f script.js || (echo "script.js manquant" && exit 1)
+
+                    echo "Tous les fichiers sont presents."
+                '''
+            }
+        }
     }
 }
