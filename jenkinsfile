@@ -1,0 +1,19 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Clean workspace') {
+            steps {
+                sh 'rm -rf projet-aires25-26'
+            }
+        }
+
+        stage('Checkout SCM') {
+            steps {
+                sh 'git clone https://github.com/srcced/projet-aires25-26.git'
+            }
+        }
+
+    }
+}
