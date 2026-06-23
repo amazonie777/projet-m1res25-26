@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NovaSite — Projet GitHub Test</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="navbar">
+    <a href="#" class="logo">
+      <span class="logo-icon">N</span>
+      NovaSite
+    </a>
+
+    <button class="menu-btn" id="menuBtn" aria-label="Ouvrir le menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <nav class="nav-links" id="navLinks">
+      <a href="#accueil">Accueil</a>
+      <a href="#services">Services</a>
+      <a href="#projet">Projet</a>
+      <a href="#contact">Contact</a>
+      <button class="theme-btn" id="themeBtn" type="button">🌙</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="accueil">
+      <div class="hero-content reveal">
+        <p class="badge">Projet GitHub Test</p>
+        <h1>Un site moderne, simple et prêt à publier.</h1>
+
+        <p class="hero-text">
+          NovaSite est une landing page responsive en HTML, CSS et JavaScript.
+          Elle est parfaite pour tester un dépôt GitHub, GitHub Pages ou un petit portfolio.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#projet" class="btn primary">Voir le projet</a>
+          <a href="#contact" class="btn secondary">Me contacter</a>
+        </div>
+
+        <div class="stats">
+          <div>
+            <strong data-count="3">0</strong>
+            <span>fichiers</span>
+          </div>
+
+          <div>
+            <strong data-count="100">0</strong>
+            <span>% responsive</span>
+          </div>
+
+          <div>
+            <strong data-count="0">0</strong>
+            <span>dépendance</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-card reveal">
+        <div class="card-top">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
+        <div class="code-block">
+          <p><span class="purple">const</span> project = {</p>
+          <p>&nbsp;&nbsp;name: <span class="green">"NovaSite"</span>,</p>
+          <p>&nbsp;&nbsp;type: <span class="green">"Landing Page"</span>,</p>
+          <p>&nbsp;&nbsp;status: <span class="green">"Ready"</span></p>
+          <p>};</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="services">
+      <div class="section-header reveal">
+        <p class="badge">Fonctionnalités</p>
+        <h2>Un rendu propre pour un projet test</h2>
+        <p>Design moderne, animations légères, responsive mobile et thème sombre/clair.</p>
+      </div>
+
+      <div class="features">
+        <article class="feature-card reveal">
+          <div class="feature-icon">⚡</div>
+          <h3>Rapide</h3>
+          <p>Le site utilise uniquement HTML, CSS et JavaScript vanilla.</p>
+        </article>
+
+        <article class="feature-card reveal">
+          <div class="feature-icon">📱</div>
+          <h3>Responsive</h3>
+          <p>Il s’adapte automatiquement aux téléphones, tablettes et ordinateurs.</p>
+        </article>
+
+        <article class="feature-card reveal">
+          <div class="feature-icon">🎨</div>
+          <h3>Moderne</h3>
+          <p>Interface épurée avec cartes, dégradés, ombres et petites animations.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="project section" id="projet">
+      <div class="project-box reveal">
+        <div>
+          <p class="badge">Structure</p>
+          <h2>Prêt pour GitHub Pages</h2>
+          <p>
+            Tu peux déposer ces trois fichiers dans un repo GitHub, puis activer GitHub Pages
+            pour mettre le site en ligne facilement.
+          </p>
+        </div>
+
+        <ul class="file-list">
+          <li><span>📄</span> index.html</li>
+          <li><span>🎨</span> style.css</li>
+          <li><span>⚙️</span> script.js</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section contact" id="contact">
+      <div class="section-header reveal">
+        <p class="badge">Contact</p>
+        <h2>Un formulaire visuel</h2>
+        <p>Il affiche une confirmation en JavaScript, sans envoyer de vraie donnée.</p>
+      </div>
+
+      <form class="contact-form reveal" id="contactForm">
+        <div class="form-row">
+          <input type="text" id="name" placeholder="Ton prénom" required />
+          <input type="email" id="email" placeholder="Ton email" required />
+        </div>
+
+        <textarea id="message" placeholder="Ton message" required></textarea>
+
+        <button class="btn primary" type="submit">Envoyer</button>
+
+        <p class="form-message" id="formMessage"></p>
+      </form>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 NovaSite — Site test HTML CSS JS</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
