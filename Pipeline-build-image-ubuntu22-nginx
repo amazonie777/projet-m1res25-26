@@ -22,21 +22,89 @@ pipeline {
             }
         }
 
-        stage('Build image Ubuntu/Nginx') {
+        stage('Verification fichiers') {
             steps {
-                script {
-                    sh 'docker build -t ${IMG_NAME} .'
-                    sh 'docker tag ${IMG_NAME} ${DOCKER_REPO}:${IMG_NAME}'
-                }
+                sh '''
+                    echo "Contenu du projet GitHub :"
+                    ls -la
+
+                    echo "Verification des fichiers necessaires..."
+
+                    if [ ! -f "Dockerfile" ]; then
+                        echo "ERREUR : Dockerfile introuvable"
+                        exit 1
+                    fi
+
+                    if [ -f "Index.html" ]; then
+                        echo "Fichier HTML trouve : Index.html"
+                    elif [ -f "index.html" ]; then
+                        echo "Fichier HTML trouve : index.html"
+                    else
+                        echo "ERREUR : aucun fichier HTML trouve"
+                        exit 1
+                    fi
+
+                    if [ ! -f "style.css" ]; then
+                        echo "ERREUR : style.css introuvable"
+                        exit 1
+                    fi
+
+                    if [ ! -f "script.js" ]; then
+                        echo "ERREUR : script.js introuvable"
+                        exit 1
+                    fi
+
+                    echo "Tous les fichiers sont presents."
+                '''
+            }
+        }
+
+        stage('Preparation du site') {
+            steps {
+                sh '''
+                    echo "Creation du dossier repsite..."
+                    rm -rf repsite
+                    mkdir -p repsite
+
+                    echo "Copie du fichier HTML..."
+                    if [ -f "Index.html" ]; then
+                        cp Index.html repsite/index.html
+                    else
+                        cp index.html repsite/index.html
+                    fi
+
+                    echo "Copie du fichier CSS..."
+                    cp style.css repsite/style.css
+
+                    echo "Copie du fichier JS..."
+                    cp script.js repsite/script.js
+
+                    echo "Verification du dossier repsite :"
+                    ls -la repsite
+                '''
+            }
+        }
+
+        stage('Build image Ubuntu/Nginx/SSH') {
+            steps {
+                sh '''
+                    echo "Construction de l'image Docker..."
+                    docker build -t ${IMG_NAME} .
+
+                    echo "Ajout du tag Docker..."
+                    docker tag ${IMG_NAME} ${DOCKER_REPO}:${IMG_NAME}
+                '''
             }
         }
 
         stage('Run Container') {
             steps {
                 sh '''
+                    echo "Arret de l'ancien conteneur si present..."
                     docker stop ${CONTAINER_NAME} || true
                     docker rm ${CONTAINER_NAME} || true
 
+                    echo "Lancement du nouveau conteneur..."
                     docker run -d \
                         --name ${CONTAINER_NAME} \
                         -p ${HTTP_PORT}:80 \
@@ -49,8 +117,13 @@ pipeline {
         stage('Check') {
             steps {
                 sh '''
+                    echo "Images Docker :"
                     docker image ls
+
+                    echo "Conteneurs actifs :"
                     docker ps
+
+                    echo "Test du site Nginx :"
                     curl -I http://localhost:${HTTP_PORT} || true
                 '''
             }
@@ -59,13 +132,13 @@ pipeline {
 
     post {
         success {
-            echo 'Pipeline terminé avec succès.'
+            echo 'Pipeline termine avec succes.'
             echo 'Site disponible sur le port 8082.'
             echo 'SSH disponible sur le port 2222.'
         }
 
         failure {
-            echo 'Pipeline échoué.'
+            echo 'Pipeline echoue.'
         }
     }
 }
