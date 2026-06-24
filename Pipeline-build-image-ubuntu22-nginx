@@ -2,78 +2,56 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'ubuntu-nginx-ssh'
+        IMG_NAME = 'ubuntu-nginx-ssh'
+        DOCKER_REPO = 'amazigh/ubuntu-nginx-ssh'
         CONTAINER_NAME = 'ubuntu-nginx-ssh-container'
         HTTP_PORT = '8082'
         SSH_PORT = '2222'
     }
 
     stages {
-        stage('Nettoyage Workspace') {
+        stage('CleanUp') {
             steps {
                 cleanWs()
             }
         }
 
-        stage('Clonage GitHub') {
+        stage('Checkout SCM') {
             steps {
                 git branch: 'main', url: 'https://github.com/amazonie777/projet-m1res25-26.git'
             }
         }
 
-        stage('Vérification Docker') {
+        stage('Build image Ubuntu/Nginx') {
             steps {
-                sh '''
-                    echo "=== Vérification Docker ==="
-                    docker --version
-                    docker image ls
-                '''
+                script {
+                    sh 'docker build -t ${IMG_NAME} .'
+                    sh 'docker tag ${IMG_NAME} ${DOCKER_REPO}:${IMG_NAME}'
+                }
             }
         }
 
-        stage('Build Image Docker') {
+        stage('Run Container') {
             steps {
                 sh '''
-                    echo "=== Construction de l'image Docker ==="
-                    docker build -t $IMAGE_NAME .
-                '''
-            }
-        }
+                    docker stop ${CONTAINER_NAME} || true
+                    docker rm ${CONTAINER_NAME} || true
 
-        stage('Suppression ancien conteneur') {
-            steps {
-                sh '''
-                    echo "=== Nettoyage ancien conteneur ==="
-                    docker stop $CONTAINER_NAME || true
-                    docker rm $CONTAINER_NAME || true
-                '''
-            }
-        }
-
-        stage('Lancement du conteneur') {
-            steps {
-                sh '''
-                    echo "=== Lancement du conteneur ==="
                     docker run -d \
-                        --name $CONTAINER_NAME \
-                        -p $HTTP_PORT:80 \
-                        -p $SSH_PORT:22 \
-                        $IMAGE_NAME
+                        --name ${CONTAINER_NAME} \
+                        -p ${HTTP_PORT}:80 \
+                        -p ${SSH_PORT}:22 \
+                        ${IMG_NAME}
                 '''
             }
         }
 
-        stage('Vérification finale') {
+        stage('Check') {
             steps {
                 sh '''
-                    echo "=== Images Docker ==="
                     docker image ls
-
-                    echo "=== Conteneurs actifs ==="
                     docker ps
-
-                    echo "=== Test Nginx ==="
-                    curl -I http://localhost:$HTTP_PORT || true
+                    curl -I http://localhost:${HTTP_PORT} || true
                 '''
             }
         }
@@ -82,14 +60,12 @@ pipeline {
     post {
         success {
             echo 'Pipeline terminé avec succès.'
-            echo 'Site Nginx disponible sur : http://IP_DE_TA_VM:8082'
-            echo 'SSH disponible sur le port : 2222'
-            echo 'Identifiant SSH : root'
-            echo 'Mot de passe SSH : password'
+            echo 'Site disponible sur le port 8082.'
+            echo 'SSH disponible sur le port 2222.'
         }
 
         failure {
-            echo 'Pipeline échoué. Regarde les logs Jenkins.'
+            echo 'Pipeline échoué.'
         }
     }
 }
