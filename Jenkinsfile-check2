@@ -8,7 +8,7 @@ pipeline {
         }
         stage('Cloner le GitHub') {
             steps {
-                git branch: 'main', url: 'https://github.com/Weys230/Projet-m1res-2526.git'
+                git branch: 'main', url: 'https://github.com/amazonie777/projet-m1res25-26.git'
             }
         }
         stage('Install Docker (Officiel)') {
