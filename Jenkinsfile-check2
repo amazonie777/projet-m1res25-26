@@ -1,0 +1,54 @@
+pipeline {
+    agent any
+    stages {
+        stage('CleanUp de Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+        stage('Cloner le GitHub') {
+            steps {
+                git branch: 'main', url: 'https://github.com/Weys230/Projet-m1res-2526.git'
+            }
+        }
+        stage('Install Docker (Officiel)') {
+            steps {
+                sh '''
+                    echo "=== 1. Nettoyage des paquets conflictuels ==="
+                    sudo apt-get remove -y docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc || true
+ 
+                    echo "=== 2. Configuration des prérequis et clés ==="
+                    sudo apt-get update
+                    sudo apt-get install -y ca-certificates curl software-properties-common
+                    sudo install -m 0755 -d /etc/apt/keyrings
+                    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+                    sudo chmod a+r /etc/apt/keyrings/docker.asc
+ 
+                    echo "=== 3. Ajout du dépôt officiel Docker ==="
+                    sudo tee /etc/apt/sources.list.d/docker.sources <<EOF > /dev/null
+Types: deb
+URIs: https://download.docker.com/linux/ubuntu
+Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
+Components: stable
+Architectures: $(dpkg --print-architecture)
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
+ 
+                    echo "=== 4. Installation de Docker Engine ==="
+                    sudo apt-get update
+                    sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+ 
+                    echo "=== 5. Configuration des droits et services ==="
+                    sudo chmod 666 /var/run/docker.sock
+                    # Ajout de l'utilisateur jenkins au groupe docker
+                    sudo usermod -aG docker jenkins
+                    # Ajout de l'utilisateur amazigh au groupe docker (avec || true au cas où)
+                    sudo usermod -aG docker amazigh || true
+                    sudo systemctl restart docker.service
+                '''
+            }
+        }
+    }
+}
+
+Dispose d’un menu contextuel
